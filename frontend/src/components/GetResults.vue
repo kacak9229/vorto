@@ -25,6 +25,35 @@
 
     <div v-if="drivers.length" class="mt-8">
       <h3 class="text-2xl font-semibold mb-4">Drivers</h3>
+      <div class="mb-4 flex justify-center pagination-container">
+        <button
+          @click="prevPage"
+          :disabled="currentPage === 0"
+          class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l"
+        >
+          Prev
+        </button>
+        <button
+          v-for="page in pageRange"
+          :key="page"
+          @click="setPage(page - 1)"
+          :class="[
+            'px-4 py-2 mx-1 font-bold',
+            page === currentPage + 1
+              ? 'bg-blue-500 text-white'
+              : 'bg-gray-300 hover:bg-gray-400 text-gray-800',
+          ]"
+        >
+          {{ page }}
+        </button>
+        <button
+          @click="nextPage"
+          :disabled="currentPage >= pageCount - 1"
+          class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-r"
+        >
+          Next
+        </button>
+      </div>
       <table class="min-w-full bg-white border border-gray-200 rounded-lg">
         <thead>
           <tr
@@ -57,22 +86,6 @@
           </tr>
         </tbody>
       </table>
-      <div class="mt-4 flex justify-center">
-        <button
-          @click="prevPage"
-          :disabled="currentPage === 0"
-          class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l"
-        >
-          Prev
-        </button>
-        <button
-          @click="nextPage"
-          :disabled="currentPage >= pageCount - 1"
-          class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-r"
-        >
-          Next
-        </button>
-      </div>
     </div>
 
     <div v-if="kpis" class="mt-8">
@@ -157,11 +170,23 @@ export default {
       const end = start + this.pageSize;
       return this.drivers.slice(start, end);
     },
+    pageRange() {
+      const rangeSize = 5;
+      let start = Math.max(1, this.currentPage + 1 - Math.floor(rangeSize / 2));
+      let end = Math.min(this.pageCount, start + rangeSize - 1);
+
+      // Adjust start if end of pages range is beyond pageCount
+      start = Math.max(1, end - rangeSize + 1);
+
+      return Array.from({ length: end - start + 1 }, (v, i) => i + start);
+    },
   },
   methods: {
     async fetchProblems() {
       try {
-        const response = await axios.get("http://localhost:8080/problems");
+        const response = await axios.get(
+          "http://157.230.247.140:8080/problems"
+        );
         this.problems = response.data.problems;
       } catch (error) {
         alert("Error fetching problems");
@@ -170,7 +195,7 @@ export default {
     async fetchResults(problemId) {
       try {
         const response = await axios.get(
-          `http://localhost:8080/results?problem_id=${problemId}`
+          `http://157.230.247.140:8080/results?problem_id=${problemId}`
         );
         this.drivers = response.data.drivers || [];
         this.kpis = response.data.kpis || null;
@@ -193,6 +218,18 @@ export default {
         this.currentPage--;
       }
     },
+    setPage(page) {
+      this.currentPage = page;
+    },
   },
 };
 </script>
+
+<style scoped>
+.pagination-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+</style>

@@ -55,7 +55,7 @@ func CalculateResults(problemID int64) (gin.H, error) {
 			totalFileTime += driver.TotalTime
 		}
 		fileDurations[fileName] = fileDuration
-		fileCosts[fileName] = (float64(fixedCostPerDriver) * float64(fileDriverCount)) + (totalFileTime * float64(fileDriverCount))
+		fileCosts[fileName] = (float64(fixedCostPerDriver) * float64(fileDriverCount)) + totalFileTime
 	}
 
 	totalDuration := time.Since(start).Seconds()
