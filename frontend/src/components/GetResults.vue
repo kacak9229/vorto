@@ -184,9 +184,7 @@ export default {
   methods: {
     async fetchProblems() {
       try {
-        const response = await axios.get(
-          "http://157.230.247.140:8080/problems"
-        );
+        const response = await axios.get("http://localhost:8080/problems");
         this.problems = response.data.problems;
       } catch (error) {
         alert("Error fetching problems");
@@ -195,7 +193,7 @@ export default {
     async fetchResults(problemId) {
       try {
         const response = await axios.get(
-          `http://157.230.247.140:8080/results?problem_id=${problemId}`
+          `http://localhost:8080/results?problem_id=${problemId}`
         );
         this.drivers = response.data.drivers || [];
         this.kpis = response.data.kpis || null;
